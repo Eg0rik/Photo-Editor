@@ -11,7 +11,7 @@ import SwiftUI
 struct Editing_PhotoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SignInScreen()
         }
     }
 }
