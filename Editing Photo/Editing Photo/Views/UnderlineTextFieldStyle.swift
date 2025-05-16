@@ -7,20 +7,24 @@
 
 import SwiftUI
 
-struct RoundedTextFieldStyle: TextFieldStyle {
+struct UnderlineTextFieldStyle: TextFieldStyle {
     
     let icon: Image?
     let linearGradient: LinearGradient
     let text: String?
+    let leftView: AnyView?
     
+    ///Shows `icon` or `leftView`.
     init(
         text: String? = nil,
+        leftView: AnyView? = nil,
         icon: Image? = nil ,
         linearGradient: LinearGradient = .mainGradient
     ) {
         self.text = text
         self.linearGradient = linearGradient
         self.icon = icon
+        self.leftView = leftView
     }
     
     func _body(configuration: TextField<Self._Label>) -> some View {
@@ -32,9 +36,15 @@ struct RoundedTextFieldStyle: TextFieldStyle {
             }
             
             HStack {
-                if icon != nil {
-                    icon
-                        .foregroundColor(.ultimateGrey)
+                Group {
+                    if icon != nil {
+                        icon
+                            .foregroundColor(.ultimateGrey)
+                            .frame(width: 18, height: 18)
+                    } else if let leftView {
+                        leftView
+                            .frame(width: 18, height: 18)
+                    }
                 }
                 
                 configuration
