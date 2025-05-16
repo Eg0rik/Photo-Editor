@@ -9,6 +9,8 @@ import SwiftUI
 
 struct UnderlineTextFieldStyle: TextFieldStyle {
     
+    @Environment(\.colorScheme) var colorScheme
+    
     let icon: Image?
     let linearGradient: LinearGradient
     let text: String?
@@ -32,14 +34,14 @@ struct UnderlineTextFieldStyle: TextFieldStyle {
             if let text {
                 Text(text)
                     .font(.system(size: 18))
-                    .foregroundColor(.venusPink)
+                    .foregroundColor(colorScheme == .dark ? .venusPink : .black)
             }
             
             HStack {
                 Group {
                     if icon != nil {
                         icon
-                            .foregroundColor(.ultimateGrey)
+                            .foregroundColor(colorScheme == .dark ? .venusPink : .black)
                             .frame(width: 18, height: 18)
                     } else if let leftView {
                         leftView

@@ -17,10 +17,8 @@ struct SecureTextFieldWithToggle: View {
             Group {
                 if showPassword {
                     TextField(placeholder, text: $passwordText)
-                        .frame(height: 24)
                 } else {
                     SecureField(placeholder, text: $passwordText)
-                        .frame(height: 24)
                 }
             }
             .textFieldStyle(
