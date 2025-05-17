@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import UIKit
 
 @main
 struct Editing_PhotoApp: App {
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     var body: some Scene {
         WindowGroup {
             SignInScreen()
