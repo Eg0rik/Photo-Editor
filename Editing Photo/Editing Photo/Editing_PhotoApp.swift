@@ -15,7 +15,11 @@ struct Editing_PhotoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            SignInScreen()
+            RootView()
         }
     }
+}
+
+private extension Editing_PhotoApp {
+    
 }

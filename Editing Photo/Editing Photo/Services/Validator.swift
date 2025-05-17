@@ -30,7 +30,7 @@ struct ValidatorErrorMessages {
 
 final class EmailValidator: Validator {
     
-    private let minLength = 4
+    private let minLength = 6
     private let maxLength = 64
     
     func validate(_ text: String) -> String? {
