@@ -9,8 +9,11 @@ import SwiftUI
 
 struct SignInScreen: View {
     
-    @State var email = ""
-    @State var password = ""
+    @ObservedObject private var viewModel: SignInViewModel
+    
+    init(viewModel: SignInViewModel = .init()) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         ZStack {
@@ -25,15 +28,13 @@ struct SignInScreen: View {
                 }
                 .padding(.top, 53)
                 
-                VStack(spacing: 40) {
-                    TextField("Email", text: $email)
-                        .textFieldStyle(UnderlineTextFieldStyle(text: "Email", icon: Image("user")))
-                        .previewLayout(.sizeThatFits)
+                VStack(spacing: 25) {
+                    ValidatedTextField(text: $viewModel.email, errorMessage: $viewModel.emailErrorMessage)
+                    
                     
                     VStack {
                         
-                        SecureTextFieldWithToggle(placeholder: "Password", passwordText: $password)
-                            .previewLayout(.sizeThatFits)
+                        ValidatedSecureTextField(text: $viewModel.password, errorMessage: $viewModel.passwordErrorMessage)
                         
                         HStack {
                             Spacer()
@@ -44,13 +45,18 @@ struct SignInScreen: View {
                             .foregroundStyle(.white)
                             .font(.system(size: 14))
                         }
-                        .padding(.top, 20)
                     }
                     
                     Button("Sign In") {
-                        
+                        viewModel.signIn()
                     }
-                    .buttonStyle(BigButtonStyle())
+                    .buttonStyle(
+                        BigButtonStyle(
+                            background: viewModel.isButtonEnabled ? AnyShapeStyle(LinearGradient.mainGradient) : AnyShapeStyle(Color.gray)
+                        )
+                    )
+                    
+                    .padding(.top, 6)
                 }
                 .padding(.top, 89)
                 
@@ -63,6 +69,7 @@ struct SignInScreen: View {
                             .frame(height: 1)
                         
                         Text("Or")
+                            .foregroundStyle(.primary)
                         
                         Rectangle()
                             .foregroundStyle(.ravenBlack)
@@ -93,6 +100,7 @@ struct SignInScreen: View {
                 }
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 25)
         }
     }
 }

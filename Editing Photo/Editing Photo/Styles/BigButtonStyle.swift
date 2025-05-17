@@ -8,12 +8,19 @@
 import SwiftUI
 
 struct BigButtonStyle: ButtonStyle {
+    
+    let background: AnyShapeStyle
+    
+    init(background: some ShapeStyle = LinearGradient.mainGradient) {
+        self.background = AnyShapeStyle(background)
+    }
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 16, weight: .bold))
             .foregroundColor(.white)
             .frame(maxWidth: .infinity, maxHeight: 46)
-            .background(LinearGradient.mainGradient)
+            .background(background)
             .cornerRadius(50)
     }
 }

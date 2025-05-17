@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ValidatedSecureTextField: View {
     @Binding var text: String
-    @Binding var errorMessage: String
+    @Binding var errorMessage: String?
     
     var body: some View {
         VStack {
@@ -17,15 +17,23 @@ struct ValidatedSecureTextField: View {
                 .previewLayout(.sizeThatFits)
             
             HStack {
-                Text(errorMessage)
+                Text(errorMessage ?? "")
                     .foregroundStyle(.red)
-                    .opacity(errorMessage.isEmpty ? 0 : 1)
+                    .opacity(opacity)
                     .frame(height: 10)
                     .animation(.easeInOut(duration: 0.2), value: errorMessage)
                 
                 Spacer()
             }
             .padding(.top, 5)
+        }
+    }
+    
+    var opacity: Double {
+        switch errorMessage {
+            case nil: 0
+            case "": 0
+            default: 1
         }
     }
 }
