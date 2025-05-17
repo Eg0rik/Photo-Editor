@@ -18,7 +18,7 @@ struct ValidatorErrorMessages {
     static let minNumbers = "Minimum number of digits "
     static let maxNumbers = "Maximum number of digits "
     static let cyrillicOrLatinOnly = "Only Cyrillic or Latin characters allowed"
-    static let validCharactersOnly = "Only letters, spaces and hyphens allowed"
+    static let validCharactersOnly = "Only letters are allowed"
     static let noConsecutiveSpecialCharacters = "No more than 2 special characters in a row"
     static let invalidEmailFormat = "Invalid email format"
     static let invalidPhoneNumber = "Invalid phone number format"
@@ -30,7 +30,7 @@ struct ValidatorErrorMessages {
 
 final class EmailValidator: Validator {
     
-    private let minLength = 2
+    private let minLength = 4
     private let maxLength = 64
     
     func validate(_ text: String) -> String? {
@@ -66,3 +66,26 @@ final class PasswordValidator: Validator {
         return nil
     }
 }
+
+final class NameValidator: Validator {
+    private let minLength = 2
+    private let maxLength = 12
+    
+    func validate(_ text: String) -> String? {
+        guard text.count >= minLength else {
+            return ValidatorErrorMessages.minLength + "\(minLength)"
+        }
+        
+        guard text.count <= maxLength else {
+            return ValidatorErrorMessages.maxLength + "\(maxLength)"
+        }
+        
+        let pattern = #"^[a-zA-Zа-яА-ЯёЁ]+$"#
+        if text.range(of: pattern, options: .regularExpression) == nil {
+            return ValidatorErrorMessages.validCharactersOnly
+        }
+        
+        return nil
+    }
+}
+

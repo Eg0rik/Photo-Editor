@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct ValidatedTextField: View {
+    let name: String
     @Binding var text: String
     @Binding var errorMessage: String?
     
     var body: some View {
         VStack {
-            TextField("Email", text: $text)
-                .textFieldStyle(UnderlineTextFieldStyle(text: "Email", icon: Image("user")))
+            TextField(name, text: $text)
+                .textFieldStyle(UnderlineTextFieldStyle(text: name, icon: Image("user")))
                 .previewLayout(.sizeThatFits)
+                .keyboardType(.emailAddress)
             
             HStack {
                 Text(errorMessage ?? "")
@@ -40,5 +42,5 @@ struct ValidatedTextField: View {
 }
 
 #Preview {
-    SignInScreen()
+    AuthScreen()
 }

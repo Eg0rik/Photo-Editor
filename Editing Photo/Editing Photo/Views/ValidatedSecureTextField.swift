@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ValidatedSecureTextField: View {
+    let name: String
     @Binding var text: String
     @Binding var errorMessage: String?
     
     var body: some View {
         VStack {
-            SecureTextFieldWithToggle(placeholder: "Password", passwordText: $text)
+            SecureTextFieldWithToggle(placeholder: name, passwordText: $text)
                 .previewLayout(.sizeThatFits)
             
             HStack {
@@ -39,5 +40,5 @@ struct ValidatedSecureTextField: View {
 }
 
 #Preview {
-    SignInScreen()
+    AuthScreen()
 }

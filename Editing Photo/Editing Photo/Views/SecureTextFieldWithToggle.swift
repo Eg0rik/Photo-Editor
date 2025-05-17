@@ -41,5 +41,5 @@ struct SecureTextFieldWithToggle: View {
 }
 
 #Preview {
-    SignInScreen()
+    AuthScreen()
 }

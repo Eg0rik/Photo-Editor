@@ -19,13 +19,13 @@ struct BigButtonStyle: ButtonStyle {
         configuration.label
             .font(.system(size: 16, weight: .bold))
             .foregroundColor(.white)
-            .frame(maxWidth: .infinity, maxHeight: 46)
+            .frame(maxWidth: .infinity, minHeight: 46)
             .background(background)
             .cornerRadius(50)
     }
 }
 
 #Preview {
-    SignInScreen()
+    AuthScreen()
 }
 
