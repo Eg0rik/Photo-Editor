@@ -8,6 +8,8 @@
 import SwiftUI
 import Combine
 import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
 
 func getAuthErrorMessage(_ error: NSError) -> String {
     guard let code = AuthErrorCode(rawValue: error.code) else {
@@ -38,7 +40,6 @@ final class AuthScreenViewModel: ObservableObject {
     
     @Published var isButtonEnabled = false
     @Published private(set) var enterType = EnterType.signIn
-    @Published var alertErrorMessage: String? = nil
     
     //----TextFields----
     @Published var email: String = ""
@@ -97,6 +98,50 @@ final class AuthScreenViewModel: ObservableObject {
             
             let nsError = error as NSError
             errorMessage(getAuthErrorMessage(nsError))
+        }
+    }
+    
+    func signInWithGoogle(success: @escaping ()->(), errorMessage: @escaping (String)->()) {
+        guard let rootViewController = UIViewController.rootViewController else {
+            print("Unable to access root view controller")
+            return
+        }
+        
+        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+        
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { [unowned self] result, error in
+            guard error == nil else {
+                if let error = error as NSError? {
+                    errorMessage(getAuthErrorMessage(error))
+                }
+                
+                return
+            }
+            
+            guard let user = result?.user,
+                  let idToken = user.idToken?.tokenString
+            else {
+                errorMessage("Error with result from Google Sign-In")
+                return
+            }
+            
+            print(result)
+            
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                           accessToken: user.accessToken.tokenString)
+            
+            Auth.auth().signIn(with: credential) { result, error  in
+                guard let error else {
+                    success()
+                    return
+                }
+                
+                let nsError = error as NSError
+                errorMessage(getAuthErrorMessage(nsError))
+            }
         }
     }
 }
@@ -293,4 +338,8 @@ extension AuthScreenViewModel {
             }
         }
     }
+}
+
+#Preview {
+    RootView()
 }

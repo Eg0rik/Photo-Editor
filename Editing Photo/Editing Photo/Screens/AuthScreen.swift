@@ -11,7 +11,6 @@ struct AuthScreen: View {
     
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject private var viewModel = AuthScreenViewModel()
-    @State private var showAlert = false
     
     var body: some View {
         content()
@@ -57,16 +56,20 @@ struct AuthScreen: View {
                                 .frame(height: 1)
                         }
                         
-                        Image("google")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 36, height: 36)
-                            .background(
-                                RoundedRectangle(cornerRadius: 13)
-                                    .fill(Color.white)
-                                    .frame(width: 46, height: 46)
-                            )
-                            .padding(.top, 25)
+                        Button {
+                            signInWithGoogle()
+                        } label: {
+                            Image("google")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 36, height: 36)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 13)
+                                        .fill(Color.white)
+                                        .frame(width: 46, height: 46)
+                                )
+                                .padding(.top, 25)
+                        }
                     }
                     .padding(.top, 25)
                     
@@ -84,16 +87,16 @@ struct AuthScreen: View {
                 .padding(.bottom, 25)
             }
             .navigationTitle(viewModel.enterType.title)
-            .onReceive(viewModel.$alertErrorMessage) { errorMessage in
-                showAlert = errorMessage != nil
-            }
-            .alert("Error", isPresented: $showAlert, presenting: viewModel.alertErrorMessage) { error in
-                Button("OK", role: .cancel) {
-                    viewModel.alertErrorMessage = nil
-                }
-            } message: { error in
-                Text(error)
-            }
+//            .onReceive(viewModel.$alertErrorMessage) { errorMessage in
+//                showAlert = errorMessage != nil
+//            }
+//            .alert("Error", isPresented: $showAlert, presenting: viewModel.alertErrorMessage) { error in
+//                Button("OK", role: .cancel) {
+//                    viewModel.alertErrorMessage = nil
+//                }
+//            } message: { error in
+//                Text(error)
+//            }
         }
     }
     
@@ -143,6 +146,15 @@ private extension AuthScreen {
             case .signIn: proccessSignIn()
             case .signUp: proccessSignUp()
         }
+    }
+    
+    func signInWithGoogle() {
+        viewModel.signInWithGoogle {
+            appCoordinator.presentFullScreenCover(.main)
+        } errorMessage: { message in
+            appCoordinator.showAlert(title: "Error sign in with Google", message: message)
+        }
+
     }
     
     func proccessSignIn() {
