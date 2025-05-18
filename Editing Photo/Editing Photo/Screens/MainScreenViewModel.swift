@@ -10,11 +10,12 @@ import SwiftUI
 
 final class MainScreenViewModel: ObservableObject {
     
-    func signOut() {
+    func signOut(onSuccess: @escaping ()->(), errorMessage: @escaping (String)->()) {
         do {
-          try Auth.auth().signOut()
+            try Auth.auth().signOut()
+            onSuccess()
         } catch let signOutError as NSError {
-          print("Error signing out: %@", signOutError)
+            errorMessage("\(signOutError)")
         }
     }
     

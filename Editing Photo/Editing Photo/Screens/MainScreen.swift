@@ -15,7 +15,7 @@ struct MainScreen: View {
     
     var body: some View {
         Button("Sign Out") {
-            viewModel.signOut()
+            signOut()
         }
         
         Button("Confirm email") {
@@ -24,6 +24,16 @@ struct MainScreen: View {
             } errorMessage: { message in
                 appCoordinator.showAlert(title: "Confirm email error", message: message)
             }
+        }
+    }
+}
+
+private extension MainScreen {
+    func signOut() {
+        viewModel.signOut {
+            appCoordinator.setRoot(.auth)
+        } errorMessage: { message in
+            appCoordinator.showAlert(title: "Sign out error", message: message)
         }
     }
 }
