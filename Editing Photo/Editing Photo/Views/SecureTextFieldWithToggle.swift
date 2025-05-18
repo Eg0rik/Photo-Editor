@@ -39,7 +39,3 @@ struct SecureTextFieldWithToggle: View {
         }
     }
 }
-
-#Preview {
-    AuthScreen()
-}

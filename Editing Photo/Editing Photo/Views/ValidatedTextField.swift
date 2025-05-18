@@ -40,7 +40,3 @@ struct ValidatedTextField: View {
         }
     }
 }
-
-#Preview {
-    AuthScreen()
-}

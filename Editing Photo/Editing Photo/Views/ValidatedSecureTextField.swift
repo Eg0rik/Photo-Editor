@@ -40,5 +40,5 @@ struct ValidatedSecureTextField: View {
 }
 
 #Preview {
-    AuthScreen()
+   RootView()
 }

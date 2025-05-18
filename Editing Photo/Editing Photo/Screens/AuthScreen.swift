@@ -9,15 +9,17 @@ import SwiftUI
 
 struct AuthScreen: View {
     
-    @ObservedObject private var viewModel: AuthViewModel
-
-    init(viewModel: AuthViewModel = .init()) {
-        self.viewModel = viewModel
-    }
+    @EnvironmentObject var appCoordinator: AppCoordinator
+    @StateObject private var viewModel = AuthScreenViewModel()
+    @State private var showAlert = false
     
     var body: some View {
+        content()
+    }
+    
+    func content() -> some View {
         ZStack {
-            Color.background
+            Color.background.ignoresSafeArea()
             
             ScrollView {
                 
@@ -29,9 +31,7 @@ struct AuthScreen: View {
                             case .signUp: signUpTextFields
                         }
                         
-                        Button(viewModel.enterType.name) {
-                            viewModel.buttonEnterTapped()
-                        }
+                        Button(viewModel.enterType.name, action: buttonEnterTapped)
                         .buttonStyle(
                             BigButtonStyle(
                                 background: viewModel.isButtonEnabled ? AnyShapeStyle(LinearGradient.mainGradient) : AnyShapeStyle(Color.gray)
@@ -75,9 +75,7 @@ struct AuthScreen: View {
                     HStack(alignment: .center) {
                         Text(viewModel.enterType.tip)
                         
-                        Button(viewModel.enterType.name) {
-                            viewModel.toggleEnterMode()
-                        }
+                        Button(viewModel.enterType.anotherName, action: viewModel.toggleEnterMode)
                         .font(.system(size: 14, weight: .medium))
                     }
                     .padding(.top, 25)
@@ -86,6 +84,16 @@ struct AuthScreen: View {
                 .padding(.bottom, 25)
             }
             .navigationTitle(viewModel.enterType.title)
+            .onReceive(viewModel.$alertErrorMessage) { errorMessage in
+                showAlert = errorMessage != nil
+            }
+            .alert("Error", isPresented: $showAlert, presenting: viewModel.alertErrorMessage) { error in
+                Button("OK", role: .cancel) {
+                    viewModel.alertErrorMessage = nil
+                }
+            } message: { error in
+                Text(error)
+            }
         }
     }
     
@@ -94,7 +102,7 @@ struct AuthScreen: View {
             Spacer()
             
             Button("Forgot Password?") {
-                
+                appCoordinator.push(.forgetPassword)
             }
             .foregroundStyle(.text)
             .font(.system(size: 14))
@@ -127,6 +135,33 @@ struct AuthScreen: View {
     }
 }
 
+private extension AuthScreen {
+    func buttonEnterTapped() {
+        guard viewModel.isButtonEnabled else { return }
+        
+        switch viewModel.enterType {
+            case .signIn: proccessSignIn()
+            case .signUp: proccessSignUp()
+        }
+    }
+    
+    func proccessSignIn() {
+        viewModel.signIn {
+            appCoordinator.presentFullScreenCover(.main)
+        } errorMessage: { message in
+            appCoordinator.showAlert(title: "Error sign in", message: message)
+        }
+    }
+    
+    func proccessSignUp() {
+        viewModel.signUp {
+            appCoordinator.presentFullScreenCover(.main)
+        } errorMessage: { message in
+            appCoordinator.showAlert(title: "Error sign up", message: message)
+        }
+    }
+}
+
 #Preview {
-    RootView()
+    CoordinatorView()
 }

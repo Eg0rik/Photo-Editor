@@ -7,10 +7,40 @@
 
 import SwiftUI
 import Combine
+import FirebaseAuth
 
-final class AuthViewModel: ObservableObject {
-    var count = 0
+func getAuthErrorMessage(_ error: NSError) -> String {
+    guard let code = AuthErrorCode(rawValue: error.code) else {
+        return error.localizedDescription
+    }
     
+    switch code {
+        case .invalidEmail:
+            return "Invalid email address."
+        case .wrongPassword:
+            return "Wrong password. Try again."
+        case .userNotFound:
+            return "No user found with this email."
+        case .userDisabled:
+            return "This user account has been disabled."
+        case .tooManyRequests:
+            return "Too many login attempts. Try again later."
+        case .networkError:
+            return "Network error. Check your internet connection."
+        default:
+            return error.localizedDescription
+    }
+}
+
+final class AuthScreenViewModel: ObservableObject {
+    
+    private var subscriptions = Set<AnyCancellable>()
+    
+    @Published var isButtonEnabled = false
+    @Published private(set) var enterType = EnterType.signIn
+    @Published var alertErrorMessage: String? = nil
+    
+    //----TextFields----
     @Published var email: String = ""
     @Published var emailErrorMessage: String? = nil
     private let emailValidator = EmailValidator()
@@ -25,36 +55,53 @@ final class AuthViewModel: ObservableObject {
     
     @Published var confirmPassword: String = ""
     @Published var confirmPasswordErrorMessage: String? = nil
-    
-    @Published var isButtonEnabled = false
-    @Published private(set) var enterType = EnterType.signIn
-    
-    private var subscriptions = Set<AnyCancellable>()
+    //----TextFields----
     
     init() {
         setupEmailValidationSubscription()
         setupPasswordValidationSubscription()
     }
     
-    func buttonEnterTapped() {
-        guard isButtonEnabled else { return }
-        
-        
-    }
-    
     func toggleEnterMode() {
         enterType == .signIn ? switchToSignUpMode() : switchToSignInMode()
     }
-}
-
-private extension AuthViewModel {
-    func signIn() {
-        
+    
+    func signIn(success: @escaping ()->(), errorMessage: @escaping (String)->()) {
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+           
+            print(result)
+            print("====Sign In====")
+            print(error)
+            
+            guard let error else {
+                success()
+                return
+            }
+            
+            let nsError = error as NSError
+            errorMessage(getAuthErrorMessage(nsError))
+        }
     }
     
-    func signUp() {
-        
+    func signUp(success: @escaping ()->(), errorMessage: @escaping (String)->()) {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            
+            print(result)
+            print("====Sign Up====")
+            print(error)
+            
+            guard let error else {
+                success()
+                return
+            }
+            
+            let nsError = error as NSError
+            errorMessage(getAuthErrorMessage(nsError))
+        }
     }
+}
+
+private extension AuthScreenViewModel {
     
     func switchToSignInMode() {
         enterType = .signIn
@@ -206,7 +253,7 @@ private extension AuthViewModel {
     }
 }
 
-extension AuthViewModel {
+extension AuthScreenViewModel {
     enum EnterType {
         case signIn
         case signUp
@@ -225,6 +272,13 @@ extension AuthViewModel {
             }
         }
         
+        var anotherName: String {
+            switch self {
+                case .signIn: "Sign Up"
+                case .signUp: "Sign In"
+            }
+        }
+        
         var tip: String {
             switch self {
                 case .signIn: "Don't have an account?"
@@ -239,8 +293,4 @@ extension AuthViewModel {
             }
         }
     }
-}
-
-#Preview {
-    RootView()
 }

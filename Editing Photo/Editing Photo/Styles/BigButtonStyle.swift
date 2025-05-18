@@ -26,6 +26,6 @@ struct BigButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    AuthScreen()
+    RootView()
 }
 

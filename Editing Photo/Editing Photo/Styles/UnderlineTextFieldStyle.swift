@@ -65,5 +65,5 @@ struct UnderlineTextFieldStyle: TextFieldStyle {
 }
 
 #Preview {
-    AuthScreen()
+    RootView()
 }
