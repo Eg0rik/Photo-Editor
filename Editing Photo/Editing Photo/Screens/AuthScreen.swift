@@ -87,16 +87,6 @@ struct AuthScreen: View {
                 .padding(.bottom, 25)
             }
             .navigationTitle(viewModel.enterType.title)
-//            .onReceive(viewModel.$alertErrorMessage) { errorMessage in
-//                showAlert = errorMessage != nil
-//            }
-//            .alert("Error", isPresented: $showAlert, presenting: viewModel.alertErrorMessage) { error in
-//                Button("OK", role: .cancel) {
-//                    viewModel.alertErrorMessage = nil
-//                }
-//            } message: { error in
-//                Text(error)
-//            }
         }
     }
     
@@ -150,7 +140,7 @@ private extension AuthScreen {
     
     func signInWithGoogle() {
         viewModel.signInWithGoogle {
-            appCoordinator.presentFullScreenCover(.main)
+            appCoordinator.setRoot(.main)
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign in with Google", message: message)
         }
@@ -159,7 +149,7 @@ private extension AuthScreen {
     
     func proccessSignIn() {
         viewModel.signIn {
-            appCoordinator.presentFullScreenCover(.main)
+            appCoordinator.setRoot(.main)
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign in", message: message)
         }
@@ -167,7 +157,7 @@ private extension AuthScreen {
     
     func proccessSignUp() {
         viewModel.signUp {
-            appCoordinator.presentFullScreenCover(.main)
+            appCoordinator.setRoot(.main)
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign up", message: message)
         }
