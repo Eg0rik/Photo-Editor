@@ -95,7 +95,7 @@ struct AuthScreen: View {
             Spacer()
             
             Button("Forgot Password?") {
-                appCoordinator.push(.forgetPassword)
+                appCoordinator.presentSheet(.forgetPassword)
             }
             .foregroundStyle(.text)
             .font(.system(size: 14))
@@ -165,5 +165,5 @@ private extension AuthScreen {
 }
 
 #Preview {
-    CoordinatorView()
+    RootView()
 }

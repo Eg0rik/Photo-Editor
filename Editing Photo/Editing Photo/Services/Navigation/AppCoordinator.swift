@@ -63,7 +63,7 @@ class AppCoordinator: ObservableObject {
         switch route {
             case .auth: AuthScreen()
             case .main: MainScreen()
-            case .forgetPassword: Text("Forget Password")
+            case .forgetPassword: ForgetPasswordScreen()
         }
     }
 }
