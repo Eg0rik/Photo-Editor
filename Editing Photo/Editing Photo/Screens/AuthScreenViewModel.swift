@@ -11,29 +11,6 @@ import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
 
-func getAuthErrorMessage(_ error: NSError) -> String {
-    guard let code = AuthErrorCode(rawValue: error.code) else {
-        return error.localizedDescription
-    }
-    
-    switch code {
-        case .invalidEmail:
-            return "Invalid email address."
-        case .wrongPassword:
-            return "Wrong password. Try again."
-        case .userNotFound:
-            return "No user found with this email."
-        case .userDisabled:
-            return "This user account has been disabled."
-        case .tooManyRequests:
-            return "Too many login attempts. Try again later."
-        case .networkError:
-            return "Network error. Check your internet connection."
-        default:
-            return error.localizedDescription
-    }
-}
-
 final class AuthScreenViewModel: ObservableObject {
     
     private var subscriptions = Set<AnyCancellable>()
@@ -65,6 +42,22 @@ final class AuthScreenViewModel: ObservableObject {
     
     func toggleEnterMode() {
         enterType == .signIn ? switchToSignUpMode() : switchToSignInMode()
+    }
+    
+    func sendEmailVerification(onSuccess: @escaping ()->(), errorMessage: @escaping (String)->()) {
+        guard let user = Auth.auth().currentUser else {
+            errorMessage("User don't authrized")
+            return
+        }
+
+        user.sendEmailVerification { error in
+            if let error {
+                errorMessage(error.localizedDescription)
+                return
+            }
+            
+            onSuccess()
+        }
     }
     
     func signIn(success: @escaping ()->(), errorMessage: @escaping (String)->()) {

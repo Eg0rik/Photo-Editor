@@ -11,6 +11,7 @@ struct AuthScreen: View {
     
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject private var viewModel = AuthScreenViewModel()
+    @State private var showAlert: Bool = false
     
     var body: some View {
         content()
@@ -87,6 +88,11 @@ struct AuthScreen: View {
                 .padding(.bottom, 25)
             }
             .navigationTitle(viewModel.enterType.title)
+            .alert("Check your email and confrim your account", isPresented: $showAlert) {
+                Button("Ok", role: .cancel) {
+                    appCoordinator.setRoot(.main)
+                }
+            }
         }
     }
     
@@ -157,10 +163,19 @@ private extension AuthScreen {
     
     func proccessSignUp() {
         viewModel.signUp {
-            appCoordinator.setRoot(.main)
+            sendEmailVerification()
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign up", message: message)
         }
+    }
+    
+    func sendEmailVerification() {
+        viewModel.sendEmailVerification {
+            showAlert = true
+        } errorMessage: { message in
+            appCoordinator.showAlert(title: "Error send email verification", message: message)
+        }
+
     }
 }
 
