@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct EditingPhotoScreen: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
