@@ -46,7 +46,6 @@
 				04B37EC32DD6F58A003B171B /* Editing Photo */,
 				04B37EC22DD6F58A003B171B /* Products */,
 				E02195A8D2E8FC9E2C83C44A /* Pods */,
-				04F3C8422DDA1BF900DFE716 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -56,13 +55,6 @@
 				04B37EC12DD6F58A003B171B /* Editing Photo.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		04F3C8422DDA1BF900DFE716 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E02195A8D2E8FC9E2C83C44A /* Pods */ = {
@@ -285,7 +277,7 @@
 				DEVELOPMENT_TEAM = ZC747989UL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Editing-Photo-Info.plist";
+				INFOPLIST_FILE = "/Users/mac/Desktop/swift/Editing Photo/Editing Photo/Editing Photo/Editing-Photo-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -315,7 +307,7 @@
 				DEVELOPMENT_TEAM = ZC747989UL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Editing-Photo-Info.plist";
+				INFOPLIST_FILE = "/Users/mac/Desktop/swift/Editing Photo/Editing Photo/Editing Photo/Editing-Photo-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
