@@ -10,7 +10,7 @@ import SwiftUI
 class AppCoordinator: ObservableObject {
     var alertMessage: AlertMessage? = nil
     
-    @Published var rootView: Screen = .auth
+    @Published var rootView: Screen = .uploadYourPhoto
     @Published var path: NavigationPath = NavigationPath()
     @Published var sheet: Screen?
     @Published var fullScreenCover: Screen?
@@ -64,6 +64,8 @@ class AppCoordinator: ObservableObject {
             case .auth: AuthScreen()
             case .main: MainScreen()
             case .forgetPassword: ForgetPasswordScreen()
+            case .uploadYourPhoto: UploadYourPhotoScreen()
+            case .editingPhoto(let image): EditingPhotoScreen(viewModel: .init(image: Image(uiImage: image)))
         }
     }
 }

@@ -14,16 +14,8 @@ struct MainScreen: View {
     @StateObject private var viewModel = MainScreenViewModel()
     
     var body: some View {
-        Button("Sign Out") {
-            signOut()
-        }
-        
-        Button("Confirm email") {
-            viewModel.sendEmailVerification {
-                appCoordinator.showAlert(title: "Check you email", message: "We sent confirmation link")
-            } errorMessage: { message in
-                appCoordinator.showAlert(title: "Confirm email error", message: message)
-            }
+        VStack {
+            
         }
     }
 }

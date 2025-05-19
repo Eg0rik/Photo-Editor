@@ -5,12 +5,16 @@
 //  Created by mac on 17.05.25.
 //
 
-enum Screen: Identifiable {
+import SwiftUI
+
+enum Screen: Identifiable, Hashable {
     case auth
     case main
     case forgetPassword
+    case uploadYourPhoto
+    case editingPhoto(UIImage)
     
-    var id: Self {
-        return self
+    var id: UUID {
+        UUID()
     }
 }
