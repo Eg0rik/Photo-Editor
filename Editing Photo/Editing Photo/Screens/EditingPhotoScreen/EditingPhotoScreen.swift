@@ -99,6 +99,7 @@ struct EditingPhotoScreen: View {
                 }
             }
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .alert("Warning!", isPresented: $showWarningAlert) {
                 Button("Contintue editing", role: .cancel) {
                     
