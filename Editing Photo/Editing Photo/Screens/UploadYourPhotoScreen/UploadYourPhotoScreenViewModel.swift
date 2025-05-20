@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import FirebaseAuth
 
 final class UploadYourPhotoScreenViewModel: ObservableObject {
     @Published var uiImage: UIImage? = nil
@@ -17,6 +18,15 @@ final class UploadYourPhotoScreenViewModel: ObservableObject {
             if let imageSelection {
                 loadImage(from: imageSelection)
             }
+        }
+    }
+    
+    func signOut(onSuccess: @escaping ()->(), errorMessage: @escaping (String)->()) {
+        do {
+            try Auth.auth().signOut()
+            onSuccess()
+        } catch let signOutError as NSError {
+            errorMessage("\(signOutError)")
         }
     }
 }

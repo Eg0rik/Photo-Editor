@@ -6,11 +6,15 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 final class EditingPhotoViewModel: ObservableObject {
-    @Published var image: Image
-    
-    init(image: Image) {
-        self.image = image
+    func signOut(onSuccess: @escaping ()->(), errorMessage: @escaping (String)->()) {
+        do {
+            try Auth.auth().signOut()
+            onSuccess()
+        } catch let signOutError as NSError {
+            errorMessage("\(signOutError)")
+        }
     }
 }

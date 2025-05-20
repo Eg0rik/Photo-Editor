@@ -90,7 +90,7 @@ struct AuthScreen: View {
             .navigationTitle(viewModel.enterType.title)
             .alert("Check your email and confrim your account", isPresented: $showAlert) {
                 Button("Ok", role: .cancel) {
-                    appCoordinator.setRoot(.main)
+                    appCoordinator.setRoot(.uploadYourPhoto)
                 }
             }
         }
@@ -146,7 +146,7 @@ private extension AuthScreen {
     
     func signInWithGoogle() {
         viewModel.signInWithGoogle {
-            appCoordinator.setRoot(.main)
+            appCoordinator.setRoot(.uploadYourPhoto)
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign in with Google", message: message)
         }
@@ -155,7 +155,7 @@ private extension AuthScreen {
     
     func proccessSignIn() {
         viewModel.signIn {
-            appCoordinator.setRoot(.main)
+            appCoordinator.setRoot(.uploadYourPhoto)
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign in", message: message)
         }

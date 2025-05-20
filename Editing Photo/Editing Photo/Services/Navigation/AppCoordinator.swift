@@ -6,18 +6,27 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 class AppCoordinator: ObservableObject {
     var alertMessage: AlertMessage? = nil
     
-    @Published var rootView: Screen = .editingPhoto(.bird)
+    @Published var rootScreen: Screen = .auth
     @Published var path: NavigationPath = NavigationPath()
     @Published var sheet: Screen?
     @Published var fullScreenCover: Screen?
     @Published var showAlert = false
     
+    init() {
+        if let _ = Auth.auth().currentUser {
+            rootScreen = .uploadYourPhoto
+        } else {
+            rootScreen = .auth
+        }
+    }
+    
     func getRootView() -> some View {
-        build(rootView)
+        build(rootScreen)
     }
     
     func push(_ screen: Screen) {
@@ -29,7 +38,7 @@ class AppCoordinator: ObservableObject {
     }
     
     func setRoot(_ screen: Screen) {
-        rootView = screen
+        rootScreen = screen
         path.removeLast(path.count)
     }
     
@@ -62,7 +71,6 @@ class AppCoordinator: ObservableObject {
     func build(_ route: Screen) -> some View {
         switch route {
             case .auth: AuthScreen()
-            case .main: MainScreen()
             case .forgetPassword: ForgetPasswordScreen()
             case .uploadYourPhoto: UploadYourPhotoScreen()
             case .editingPhoto(let image): EditingPhotoScreen(uiImage: image)

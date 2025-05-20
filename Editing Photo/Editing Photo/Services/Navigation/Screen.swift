@@ -9,7 +9,6 @@ import SwiftUI
 
 enum Screen: Identifiable, Hashable {
     case auth
-    case main
     case forgetPassword
     case uploadYourPhoto
     case editingPhoto(UIImage)

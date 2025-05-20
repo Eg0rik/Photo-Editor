@@ -10,6 +10,7 @@ import PencilKit
 
 struct EditingPhotoScreen: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @StateObject var viewModel = EditingPhotoViewModel()
     
     @State private var toolPickerVisible = true
     @State private var drawing = PKDrawing()
@@ -29,7 +30,6 @@ struct EditingPhotoScreen: View {
         NavigationStack {
             GeometryReader { geometry in
                 let fittedFrame = fittedRect(for: uiImage.size, in: geometry.size)
-                
                 ZStack {
                     Image(uiImage: uiImage)
                         .resizable()
@@ -89,6 +89,10 @@ struct EditingPhotoScreen: View {
                             appCoordinator.showAlert(title: "Saved to gallery", message: "Check your gallery")
                         }
                         
+                        Button("Sign out", systemImage: "house.fill") {
+                            signOut()
+                        }
+                        
                     } label: {
                         Label("Actions", systemImage: "ellipsis.circle")
                     }
@@ -100,18 +104,27 @@ struct EditingPhotoScreen: View {
                     
                 }
                 
-                Button("Delete photo", role: .destructive) {
+                Button("Discard changes", role: .destructive) {
                     toolPickerVisible = false
                     appCoordinator.setRoot(.uploadYourPhoto)
                 }
             } message: {
-                Text("Current photo will not be saved")
+                Text("Current changes will not be saved")
             }
         }
     }
 }
 
 private extension EditingPhotoScreen {
+    
+    func signOut() {
+        viewModel.signOut {
+            appCoordinator.setRoot(.auth)
+        } errorMessage: { message in
+            appCoordinator.showAlert(title: "Error sign out", message: message)
+        }
+    }
+    
     func fittedRect(for imageSize: CGSize, in containerSize: CGSize) -> CGRect {
         let imageAspect = imageSize.width / imageSize.height
         let containerAspect = containerSize.width / containerSize.height
