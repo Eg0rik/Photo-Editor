@@ -13,6 +13,7 @@ struct AuthScreen: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject private var viewModel = AuthScreenViewModel()
     @State private var showAlert: Bool = false
+    @State private var isLoading = false
     
     var body: some View {
         content()
@@ -99,6 +100,10 @@ struct AuthScreen: View {
                     appCoordinator.setRoot(.uploadYourPhoto)
                 }
             }
+            
+            if isLoading {
+                CustomProgressView()
+            }
         }
     }
     
@@ -160,28 +165,36 @@ private extension AuthScreen {
     }
     
     func proccessSignIn() {
+        isLoading = true
+        
         viewModel.signIn {
+            isLoading = false
             appCoordinator.setRoot(.uploadYourPhoto)
         } errorMessage: { message in
+            isLoading = false
             appCoordinator.showAlert(title: "Error sign in", message: message)
         }
     }
     
     func proccessSignUp() {
+        isLoading = true
+        
         viewModel.signUp {
             sendEmailVerification()
         } errorMessage: { message in
+            isLoading = false
             appCoordinator.showAlert(title: "Error sign up", message: message)
         }
     }
     
     func sendEmailVerification() {
         viewModel.sendEmailVerification {
+            isLoading = false
             showAlert = true
         } errorMessage: { message in
+            isLoading = false
             appCoordinator.showAlert(title: "Error send email verification", message: message)
         }
-        
     }
 }
 

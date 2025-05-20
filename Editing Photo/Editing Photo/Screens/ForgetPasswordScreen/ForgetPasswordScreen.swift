@@ -12,6 +12,7 @@ struct ForgetPasswordScreen: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject private var viewModel = ForgetPasswordScreenViewModel()
     @State var showAlert = false
+    @State var isLoading = false
     
     var body: some View {
         content()
@@ -58,6 +59,10 @@ struct ForgetPasswordScreen: View {
                         appCoordinator.dismissSheet()
                     }
                 }
+            
+            if isLoading {
+                CustomProgressView()
+            }
         }
         .onTapGesture {
             UIApplication.shared.hideKeyboard()
@@ -67,9 +72,13 @@ struct ForgetPasswordScreen: View {
 
 private extension ForgetPasswordScreen {
     func sendPasswordReset() {
+        isLoading = true
+        
         viewModel.sendPasswordReset {
+            isLoading = false
             showAlert = true
         } errorMessage: { message in
+            isLoading = false
             appCoordinator.showAlert(title: "Error", message: message)
         }
     }
