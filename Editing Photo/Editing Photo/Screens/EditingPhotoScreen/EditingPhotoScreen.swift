@@ -14,7 +14,7 @@ struct EditingPhotoScreen: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject var viewModel = EditingPhotoViewModel()
     
-    @State private var currentToolPanel: ToolPanelType = .filters
+    @State private var currentToolPanel: ToolPanelType = .hidePanel
     @State private var currentFilter: FilterType = .original
     @State private var drawing = PKDrawing()
     @State private var canvasView = PKCanvasView()
@@ -96,6 +96,9 @@ struct EditingPhotoScreen: View {
                         preview: SharePreview("Drawing", image: renderedImage)
                     ) {
                         Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .onTapGesture {
+                        currentToolPanel = .hidePanel
                     }
                 }
                 

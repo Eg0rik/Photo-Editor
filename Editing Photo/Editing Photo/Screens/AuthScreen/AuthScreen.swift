@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct AuthScreen: View {
     
@@ -19,7 +20,8 @@ struct AuthScreen: View {
     
     func content() -> some View {
         ZStack {
-            Color.background.ignoresSafeArea()
+            Color.background
+                .ignoresSafeArea()
             
             ScrollView {
                 
@@ -32,12 +34,12 @@ struct AuthScreen: View {
                         }
                         
                         Button(viewModel.enterType.name, action: buttonEnterTapped)
-                        .buttonStyle(
-                            BigButtonStyle(
-                                background: viewModel.isButtonEnabled ? AnyShapeStyle(LinearGradient.mainGradient) : AnyShapeStyle(Color.gray)
+                            .buttonStyle(
+                                BigButtonStyle(
+                                    background: viewModel.isButtonEnabled ? AnyShapeStyle(LinearGradient.mainGradient) : AnyShapeStyle(Color.gray)
+                                )
                             )
-                        )
-                        .padding(.top, 6)
+                            .padding(.top, 6)
                     }
                     .padding(.top, 30)
                     
@@ -80,12 +82,16 @@ struct AuthScreen: View {
                         Text(viewModel.enterType.tip)
                         
                         Button(viewModel.enterType.anotherName, action: viewModel.toggleEnterMode)
-                        .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 14, weight: .medium))
                     }
                     .padding(.top, 25)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 25)
+            }
+            //прячем клаву
+            .onTapGesture {
+                UIApplication.shared.hideKeyboard()
             }
             .navigationTitle(viewModel.enterType.title)
             .alert("Check your email and confrim your account", isPresented: $showAlert) {
@@ -150,7 +156,7 @@ private extension AuthScreen {
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign in with Google", message: message)
         }
-
+        
     }
     
     func proccessSignIn() {
@@ -175,7 +181,7 @@ private extension AuthScreen {
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error send email verification", message: message)
         }
-
+        
     }
 }
 

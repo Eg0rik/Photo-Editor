@@ -59,6 +59,9 @@ struct ForgetPasswordScreen: View {
                     }
                 }
         }
+        .onTapGesture {
+            UIApplication.shared.hideKeyboard()
+        }
     }
 }
 
