@@ -10,10 +10,15 @@ import SwiftUI
 class AppCoordinator: ObservableObject {
     var alertMessage: AlertMessage? = nil
     
+    @Published var rootView: Screen = .editingPhoto(.bird)
     @Published var path: NavigationPath = NavigationPath()
     @Published var sheet: Screen?
     @Published var fullScreenCover: Screen?
     @Published var showAlert = false
+    
+    func getRootView() -> some View {
+        build(rootView)
+    }
     
     func push(_ screen: Screen) {
         path.append(screen)
@@ -21,6 +26,11 @@ class AppCoordinator: ObservableObject {
     
     func presentSheet(_ sheet: Screen) {
         self.sheet = sheet
+    }
+    
+    func setRoot(_ screen: Screen) {
+        rootView = screen
+        path.removeLast(path.count)
     }
     
     func presentFullScreenCover(_ fullScreenCover: Screen) {
@@ -53,7 +63,9 @@ class AppCoordinator: ObservableObject {
         switch route {
             case .auth: AuthScreen()
             case .main: MainScreen()
-            case .forgetPassword: Text("Forget Password")
+            case .forgetPassword: ForgetPasswordScreen()
+            case .uploadYourPhoto: UploadYourPhotoScreen()
+            case .editingPhoto(let image): EditingPhotoScreen(uiImage: image)
         }
     }
 }
