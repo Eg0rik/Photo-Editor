@@ -18,11 +18,14 @@ class AppCoordinator: ObservableObject {
     @Published var showAlert = false
     
     init() {
-        if let _ = Auth.auth().currentUser {
+        guard let _ = Auth.auth().currentUser else { return }
+        
+        guard let lastEditedImage = getLastEditedImage() else {
             rootScreen = .uploadYourPhoto
-        } else {
-            rootScreen = .auth
+            return
         }
+        
+        rootScreen = .editingPhoto(lastEditedImage)
     }
     
     func getRootView() -> some View {
@@ -75,5 +78,15 @@ class AppCoordinator: ObservableObject {
             case .uploadYourPhoto: UploadYourPhotoScreen()
             case .editingPhoto(let image): EditingPhotoScreen(uiImage: image)
         }
+    }
+}
+
+private extension AppCoordinator {
+    func getLastEditedImage() -> UIImage? {
+        guard let data = UserDefaults.standard.data(forKey: "savedImage") else {
+            return nil
+        }
+        
+        return UIImage(data: data)
     }
 }

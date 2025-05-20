@@ -23,6 +23,7 @@ struct EditingPhotoScreen: View {
     @State private var showWarningAlert: Bool = false
     @State private var filterIntensity = 0.5
     @State private var image: Image
+    @State private var showAlertGoToSettings = false
     
     @State private var uiImage: UIImage {
         didSet {
@@ -119,7 +120,6 @@ struct EditingPhotoScreen: View {
                         
                         Button("Save Drawing", systemImage: "arrow.down.doc") {
                             saveImageToPhotoLibrary()
-                            appCoordinator.showAlert(title: "Saved to gallery", message: "Check your gallery")
                         }
                         
                         Button("Sign out", systemImage: "house.fill") {
@@ -145,6 +145,22 @@ struct EditingPhotoScreen: View {
             } message: {
                 Text("Current changes will not be saved")
             }
+            .alert("No access to the gallery", isPresented: $showAlertGoToSettings) {
+                Button("Settings") {
+                    if let settingsURL = URL(string: UIApplication.openSettingsURLString),
+                       UIApplication.shared.canOpenURL(settingsURL) {
+                        UIApplication.shared.open(settingsURL)
+                        saveImage()
+                    }
+                }
+                
+                Button("Cancel") { }
+            } message: {
+                Text("Please provide access in settings")
+            }
+        }
+        .onDisappear {
+            saveImage()
         }
     }
 }
@@ -166,6 +182,10 @@ private extension EditingPhotoScreen {
         .padding(.horizontal)
         .frame(maxWidth: .infinity)
         .background(.ultraThinMaterial)
+    }
+    
+    func saveImage() {
+        viewModel.saveImage(getRenderedImage())
     }
     
     func setFilter() {
@@ -216,6 +236,14 @@ private extension EditingPhotoScreen {
     
     func saveImageToPhotoLibrary() {
         UIImageWriteToSavedPhotosAlbum(getRenderedImage(), nil, nil, nil)
+        
+        viewModel.checkPhotoLibraryPermission { isAuthorized in
+            if isAuthorized {
+                appCoordinator.showAlert(title: "Saved to gallery", message: "Check your gallery")
+            } else {
+                showAlertGoToSettings = true
+            }
+        }
     }
 }
 
