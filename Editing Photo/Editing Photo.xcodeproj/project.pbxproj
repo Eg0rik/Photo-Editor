@@ -20,6 +20,8 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		04B37EC32DD6F58A003B171B /* Editing Photo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = "Editing Photo";
 			sourceTree = "<group>";
 		};
