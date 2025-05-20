@@ -10,22 +10,21 @@ import PencilKit
 
 struct CanvasView: UIViewRepresentable {
     @Binding var drawing: PKDrawing
-    @Binding var toolPickerVisible: Bool
+    @Binding var currentToolPanel: ToolPanelType
     @Binding var canvasView: PKCanvasView
     
     private let toolPicker = PKToolPicker()
+    
+    private var isDrawingPanelVisible: Bool {
+        currentToolPanel == .drawing
+    }
 
     func makeUIView(context: Context) -> PKCanvasView {
         canvasView.drawingPolicy = .anyInput
         canvasView.delegate = context.coordinator
         canvasView.backgroundColor = .clear
         
-        toolPicker.setVisible(toolPickerVisible, forFirstResponder: canvasView)
-        toolPicker.addObserver(canvasView)
-        
-        if toolPickerVisible {
-            canvasView.becomeFirstResponder()
-        }
+        updateToolPickerVisibility()
         
         return canvasView
     }
@@ -35,14 +34,7 @@ struct CanvasView: UIViewRepresentable {
             uiView.drawing = drawing
         }
         
-        toolPicker.setVisible(toolPickerVisible, forFirstResponder: canvasView)
-        toolPicker.addObserver(canvasView)
-
-        if toolPickerVisible {
-            canvasView.becomeFirstResponder()
-        } else {
-            canvasView.resignFirstResponder()
-        }
+        updateToolPickerVisibility()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -60,6 +52,20 @@ struct CanvasView: UIViewRepresentable {
             DispatchQueue.main.async {
                 self.drawing.wrappedValue = canvasView.drawing
             }
+        }
+    }
+}
+
+private extension CanvasView {
+    func updateToolPickerVisibility() {
+        toolPicker.setVisible(isDrawingPanelVisible, forFirstResponder: canvasView)
+        toolPicker.addObserver(canvasView)
+        canvasView.isUserInteractionEnabled = isDrawingPanelVisible
+
+        if isDrawingPanelVisible {
+            canvasView.becomeFirstResponder()
+        } else {
+            canvasView.resignFirstResponder()
         }
     }
 }

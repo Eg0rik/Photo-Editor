@@ -7,49 +7,83 @@
 
 import SwiftUI
 import PencilKit
+import CoreImage
+import CoreImage.CIFilterBuiltins
 
 struct EditingPhotoScreen: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject var viewModel = EditingPhotoViewModel()
     
-    @State private var toolPickerVisible = true
+    @State private var currentToolPanel: ToolPanelType = .filters
+    @State private var currentFilter: FilterType = .original
     @State private var drawing = PKDrawing()
     @State private var canvasView = PKCanvasView()
-    
     @State private var currentScale: CGFloat = 1.0
     @State private var currentAngle: Angle = .zero
     @State private var showWarningAlert: Bool = false
+    @State private var filterIntensity = 0.5
+    @State private var image: Image
     
-    private var uiImage: UIImage
+    @State private var uiImage: UIImage {
+        didSet {
+            image = Image(uiImage: uiImage)
+        }
+    }
+    
+    private let context = CIContext()
+    private let originalUIImage: UIImage
     
     init(uiImage: UIImage) {
         self.uiImage = uiImage
+        self.originalUIImage = uiImage
+        self.image = Image(uiImage: uiImage)
     }
     
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
                 let fittedFrame = fittedRect(for: uiImage.size, in: geometry.size)
+                
                 ZStack {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    ZStack {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: fittedFrame.width, height: fittedFrame.height)
+                            .position(x: fittedFrame.midX, y: fittedFrame.midY)
+                        
+                        CanvasView(
+                            drawing: $drawing,
+                            currentToolPanel: $currentToolPanel,
+                            canvasView: $canvasView
+                        )
                         .frame(width: fittedFrame.width, height: fittedFrame.height)
                         .position(x: fittedFrame.midX, y: fittedFrame.midY)
+                        .clipped()
+                    }
+                    .scaleEffect(currentScale)
+                    .rotationEffect(currentAngle)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .gesture(simultaneousGestures())
                     
-                    CanvasView(
-                        drawing: $drawing,
-                        toolPickerVisible: $toolPickerVisible,
-                        canvasView: $canvasView
-                    )
-                    .frame(width: fittedFrame.width, height: fittedFrame.height)
-                    .position(x: fittedFrame.midX, y: fittedFrame.midY)
-                    .clipped()
+                    VStack {
+                        Picker("Tool panel", selection: $currentToolPanel) {
+                            ForEach(ToolPanelType.allCases, id: \.self) { toolPanelType in
+                                Text(toolPanelType.rawValue)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(.horizontal)
+                        .padding(.top, 6)
+                        .background(.ultraThinMaterial)
+                        
+                        Spacer()
+                        
+                        if currentToolPanel == .filters {
+                            filtersPanel
+                        }
+                    }
                 }
-                .scaleEffect(currentScale)
-                .rotationEffect(currentAngle)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .gesture(simultaneousGestures())
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -67,10 +101,6 @@ struct EditingPhotoScreen: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-                        Button("\(toolPickerVisible ? "Hide" : "Show") Tool Picker", systemImage: "wrench.adjustable") {
-                            toolPickerVisible.toggle()
-                        }
-                        
                         Button("Erase all drawing", systemImage: "eraser.line.dashed.fill") {
                             drawing = PKDrawing()
                         }
@@ -106,7 +136,7 @@ struct EditingPhotoScreen: View {
                 }
                 
                 Button("Discard changes", role: .destructive) {
-                    toolPickerVisible = false
+                    currentToolPanel = .hidePanel
                     appCoordinator.setRoot(.uploadYourPhoto)
                 }
             } message: {
@@ -118,36 +148,37 @@ struct EditingPhotoScreen: View {
 
 private extension EditingPhotoScreen {
     
+    @ViewBuilder
+    var filtersPanel: some View {
+        Picker("Filters", selection: $currentFilter) {
+            ForEach(FilterType.allCases, id: \.self) { filter in
+                Text(filter.nameForUser)
+            }
+        }
+        .pickerStyle(.segmented)
+        .onChange(of: currentFilter) {
+            setFilter()
+        }
+        .padding(.top)
+        .padding(.horizontal)
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial)
+    }
+    
+    func setFilter() {
+        uiImage = createNewImageWithFilter(originalUIImage, filter: currentFilter)
+    }
+    
+    func setOriginalImage() {
+        uiImage = originalUIImage
+    }
+    
     func signOut() {
         viewModel.signOut {
             appCoordinator.setRoot(.auth)
         } errorMessage: { message in
             appCoordinator.showAlert(title: "Error sign out", message: message)
         }
-    }
-    
-    func fittedRect(for imageSize: CGSize, in containerSize: CGSize) -> CGRect {
-        let imageAspect = imageSize.width / imageSize.height
-        let containerAspect = containerSize.width / containerSize.height
-        
-        var resultSize = CGSize.zero
-        
-        if imageAspect > containerAspect {
-            // Image is wider
-            resultSize.width = containerSize.width
-            resultSize.height = containerSize.width / imageAspect
-        } else {
-            // Image is taller
-            resultSize.height = containerSize.height
-            resultSize.width = containerSize.height * imageAspect
-        }
-        
-        let origin = CGPoint(
-            x: (containerSize.width - resultSize.width) / 2,
-            y: (containerSize.height - resultSize.height) / 2
-        )
-        
-        return CGRect(origin: origin, size: resultSize)
     }
     
     func simultaneousGestures() -> some Gesture {
